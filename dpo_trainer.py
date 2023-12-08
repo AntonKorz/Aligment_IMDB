@@ -468,21 +468,33 @@ class DPOTrainer(Trainer):
         elif self.loss_type == "ipo":
             # eqn (17) of the paper where beta is the regularization parameter for the IPO loss, denoted by tau in the paper.
             losses = (logits - 1 / (2 * self.beta)) ** 2
-        elif self.loss_type == "alpha03":
-            alpha = 0.3
-            first_add = self.beta*(1 - u1**(-alpha))/alpha
-            second_add = self.beta*(1 - u2**(-alpha))/alpha
+        elif self.loss_type == "FKL":
+            first_add = self.beta/u1
+            second_add = self.beta/u2
             losses = -F.logsigmoid(first_add - second_add)
-        elif self.loss_type == "alpha05":
-            alpha = 0.5
-            first_add = self.beta*(1 - u1**(-alpha))/alpha
-            second_add = self.beta*(1 - u2**(-alpha))/alpha
+        elif self.loss_type == "RKL":
+            first_add = self.beta*(torch.log(u1) + 1)
+            second_add = self.beta*(torch.log(u2) + 1)
             losses = -F.logsigmoid(first_add - second_add)
-        elif self.loss_type == "alpha07":
-            alpha = 0.7
-            first_add = self.beta*(1 - u1**(-alpha))/alpha
-            second_add = self.beta*(1 - u2**(-alpha))/alpha
+        elif self.loss_type == "JSD":
+            first_add = self.beta*torch.log(2*u1/(1-u1))
+            second_add = self.beta*torch.log(2*u2/(1-u2))
             losses = -F.logsigmoid(first_add - second_add)
+        # elif self.loss_type == "alpha03":
+        #     alpha = 0.3
+        #     first_add = self.beta*(1 - u1**(-alpha))/alpha
+        #     second_add = self.beta*(1 - u2**(-alpha))/alpha
+        #     losses = -F.logsigmoid(first_add - second_add)
+        # elif self.loss_type == "alpha05":
+        #     alpha = 0.5
+        #     first_add = self.beta*(1 - u1**(-alpha))/alpha
+        #     second_add = self.beta*(1 - u2**(-alpha))/alpha
+        #     losses = -F.logsigmoid(first_add - second_add)
+        # elif self.loss_type == "alpha07":
+        #     alpha = 0.7
+        #     first_add = self.beta*(1 - u1**(-alpha))/alpha
+        #     second_add = self.beta*(1 - u2**(-alpha))/alpha
+        #     losses = -F.logsigmoid(first_add - second_add)
         else:
             raise ValueError(f"Unknown loss type: {self.loss_type}. Should be one of ['sigmoid', 'hinge', 'ipo']")
 
