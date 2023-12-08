@@ -122,7 +122,6 @@ class DPOTrainer(Trainer):
         model: Union[PreTrainedModel, nn.Module, str] = None,
         ref_model: Optional[Union[PreTrainedModel, nn.Module, str]] = None,
         beta: float = 0.1,
-        alpha: float = 0.1,
         label_smoothing: float = 0,
         loss_type: Literal["sigmoid", "hinge", "ipo"] = "sigmoid",
         args: TrainingArguments = None,
@@ -470,8 +469,9 @@ class DPOTrainer(Trainer):
             # eqn (17) of the paper where beta is the regularization parameter for the IPO loss, denoted by tau in the paper.
             losses = (logits - 1 / (2 * self.beta)) ** 2
         elif self.loss_type == "alpha":
-            first_add = self.beta*(1 - u1**(-self.alpha))/self.alpha
-            second_add = self.beta*(1 - u2**(-self.alpha))/self.alpha
+            alpha = 0.3
+            first_add = self.beta*(1 - u1**(-alpha))/alpha
+            second_add = self.beta*(1 - u2**(-alpha))/alpha
             losses = F.logsigmoid(first_add - second_add)
         else:
             raise ValueError(f"Unknown loss type: {self.loss_type}. Should be one of ['sigmoid', 'hinge', 'ipo']")
