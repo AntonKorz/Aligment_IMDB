@@ -468,8 +468,18 @@ class DPOTrainer(Trainer):
         elif self.loss_type == "ipo":
             # eqn (17) of the paper where beta is the regularization parameter for the IPO loss, denoted by tau in the paper.
             losses = (logits - 1 / (2 * self.beta)) ** 2
-        elif self.loss_type == "alpha":
+        elif self.loss_type == "alpha03":
             alpha = 0.3
+            first_add = self.beta*(1 - u1**(-alpha))/alpha
+            second_add = self.beta*(1 - u2**(-alpha))/alpha
+            losses = F.logsigmoid(first_add - second_add)
+        elif self.loss_type == "alpha05":
+            alpha = 0.5
+            first_add = self.beta*(1 - u1**(-alpha))/alpha
+            second_add = self.beta*(1 - u2**(-alpha))/alpha
+            losses = F.logsigmoid(first_add - second_add)
+        elif self.loss_type == "alpha07":
+            alpha = 0.7
             first_add = self.beta*(1 - u1**(-alpha))/alpha
             second_add = self.beta*(1 - u2**(-alpha))/alpha
             losses = F.logsigmoid(first_add - second_add)
