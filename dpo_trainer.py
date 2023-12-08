@@ -472,17 +472,17 @@ class DPOTrainer(Trainer):
             alpha = 0.3
             first_add = self.beta*(1 - u1**(-alpha))/alpha
             second_add = self.beta*(1 - u2**(-alpha))/alpha
-            losses = F.logsigmoid(first_add - second_add)
+            losses = -F.logsigmoid(first_add - second_add)
         elif self.loss_type == "alpha05":
             alpha = 0.5
             first_add = self.beta*(1 - u1**(-alpha))/alpha
             second_add = self.beta*(1 - u2**(-alpha))/alpha
-            losses = F.logsigmoid(first_add - second_add)
+            losses = -F.logsigmoid(first_add - second_add)
         elif self.loss_type == "alpha07":
             alpha = 0.7
             first_add = self.beta*(1 - u1**(-alpha))/alpha
             second_add = self.beta*(1 - u2**(-alpha))/alpha
-            losses = F.logsigmoid(first_add - second_add)
+            losses = -F.logsigmoid(first_add - second_add)
         else:
             raise ValueError(f"Unknown loss type: {self.loss_type}. Should be one of ['sigmoid', 'hinge', 'ipo']")
 
