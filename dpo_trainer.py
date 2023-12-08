@@ -452,8 +452,8 @@ class DPOTrainer(Trainer):
 
         logits = pi_logratios - ref_logratios
 
-        u1 = torch.exp(policy_chosen_logps)/torch.exp(reference_chosen_logps)
-        u2 = torch.exp(policy_rejected_logps)/torch.exp(reference_rejected_logps)
+        u1 = torch.exp(policy_chosen_logps-reference_chosen_logps)
+        u2 = torch.exp(policy_rejected_logps-reference_rejected_logps)
 
 
         # The beta is a temperature parameter for the DPO loss, typically something in the range of 0.1 to 0.5.
